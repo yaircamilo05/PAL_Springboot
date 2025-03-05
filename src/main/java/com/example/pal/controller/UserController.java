@@ -1,5 +1,6 @@
 package com.example.pal.controller;
 
+import com.example.pal.dto.UserDTO;
 import com.example.pal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/create")
-    public String createUser(@RequestParam String username,
-                             @RequestParam String password,
-                             @RequestParam String[] roles) {
-        userService.createUserWithRoles(username, password, roles);
+    public String createUser(@RequestBody UserDTO userDTO) {
+        userService.createUserWithRoles(
+            userDTO.getUsername(),
+            userDTO.getPassword(),
+            userDTO.getRoles().toArray(new String[0])
+        );
         return "User created successfully!";
     }
 }

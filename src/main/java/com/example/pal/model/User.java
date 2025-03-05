@@ -1,9 +1,11 @@
 package com.example.pal.model;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.Set;
 
 @Data
 @Entity
@@ -20,11 +22,16 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    // Lazy significa perezoso
+    // Cuando digo Lazy, hago referencia a cargar una sola vez. Y cargo más en caso de que sean necesario
+    // De la forma eager, cargo todas y genero una sobre carga
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    // Ayuda a quitar los problemas de la recursividad. Esto se da por la relación de muchos a muchos
+    @JsonIgnore
     private Set<Role> roles;
 }

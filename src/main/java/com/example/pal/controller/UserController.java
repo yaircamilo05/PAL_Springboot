@@ -1,6 +1,7 @@
 package com.example.pal.controller;
 
 import com.example.pal.dto.UserDTO;
+import com.example.pal.dto.UserResponseDTO;
 import com.example.pal.model.User;
 import com.example.pal.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,12 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@RequestBody UserDTO newUser) {
-        userService.createUserWithRoles(newUser);
-        return "User created successfully!";
+    public ResponseEntity<User> createUser(
+            @RequestParam(name = "username") String username,
+            @RequestParam(name = "password") String password,
+            @RequestParam(name = "roles") String[] roles) {
+        User user = userService.createUserWithRoles(username, password, roles);
+        return ResponseEntity.status(201).body(user);
     }
 
     @GetMapping("/all")

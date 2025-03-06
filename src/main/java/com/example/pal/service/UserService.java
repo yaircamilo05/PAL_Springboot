@@ -1,5 +1,7 @@
 package com.example.pal.service;
-
+import org.modelmapper.ModelMapper;
+import com.example.pal.dto.CreateUserDTO;
+import com.example.pal.dto.UserResponseDTO;
 import com.example.pal.model.Role;
 import com.example.pal.model.User;
 import com.example.pal.repository.RoleRepository;
@@ -12,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -25,13 +28,16 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User createUserWithRoles(String username, String password, String[] roleNames) {
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public User createUserWithRoles(CreateUserDTO createUserDTO) {
         User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setUsername(createUserDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
 
         Set<Role> roles = new HashSet<>();
-        for (String roleName : roleNames) {
+        for (String roleName : createUserDTO.getRoles()) {
             Optional<Role> roleOpt = Optional.ofNullable(roleRepository.findByName(roleName)); //Sugerencia de Java
             Role role = roleOpt.orElseGet(() -> {
                 Role newRole = new Role();
@@ -44,9 +50,11 @@ public class UserService {
         user.setRoles(roles);
         return userRepository.save(user);
     }
-    
-    public List<User> getAllUsers() {
-    	return userRepository.findAll();
+
+    public List<UserResponseDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(user-> modelMapper.map(user, UserResponseDTO.class)).collect(Collectors.toList());
+
     }
     
     public Optional<User> getUserById(Long id){

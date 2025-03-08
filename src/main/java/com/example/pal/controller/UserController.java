@@ -29,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(@ModelAttribute CreateUserDTO userDTO){
+    public ResponseEntity<User> createUser(@RequestBody CreateUserDTO userDTO){
         User user = userService.createUserWithRoles(userDTO);
         return ResponseEntity.status(201).body(user);
     }

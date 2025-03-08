@@ -9,6 +9,7 @@ import com.example.pal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -50,15 +52,17 @@ public class UserService {
         user.setRoles(roles);
         return userRepository.save(user);
     }
-
+    
+    @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream().map(user-> modelMapper.map(user, UserResponseDTO.class)).collect(Collectors.toList());
+    	return users.stream().map(user->modelMapper.map(user, UserResponseDTO.class)).toList();
 
     }
     
-    public Optional<User> getUserById(Long id){
-    	return userRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<UserResponseDTO> getUserById(Long id){
+    return userRepository.findById(id).map(user -> modelMapper.map(user, UserResponseDTO.class));
     }
     
     public User updateUser(Long id, User userDetails) {

@@ -61,8 +61,10 @@ public class UserService {
     }
     
     @Transactional(readOnly = true)
-    public Optional<UserResponseDTO> getUserById(Long id){
-    return userRepository.findById(id).map(user -> modelMapper.map(user, UserResponseDTO.class));
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+        return modelMapper.map(user, UserResponseDTO.class);
     }
     
     public User updateUser(Long id, User userDetails) {

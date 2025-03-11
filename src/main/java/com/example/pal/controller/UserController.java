@@ -41,8 +41,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id){
-        Optional<UserResponseDTO> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PutMapping("/update/{id}")

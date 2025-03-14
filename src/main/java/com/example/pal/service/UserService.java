@@ -6,32 +6,35 @@ import com.example.pal.model.Role;
 import com.example.pal.model.User;
 import com.example.pal.repository.RoleRepository;
 import com.example.pal.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    public UserService(UserRepository userRepository, 
+                      RoleRepository roleRepository,
+                      PasswordEncoder passwordEncoder,
+                      ModelMapper modelMapper) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
+    }
 
     public User createUserWithRoles(CreateUserDTO createUserDTO) {
         User user = new User();
@@ -67,17 +70,39 @@ public class UserService {
         return modelMapper.map(user, UserResponseDTO.class);
     }
     
-    public User updateUser(Long id, User userDetails) {
-    	User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("User not found!"));
-    	user.setUsername(userDetails.getUsername());
-    	if(user.getPassword()!=null) {
-    		user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
-    	}
-    	user.setRoles(userDetails.getRoles());
-    	return userRepository.save(user);
+    
+    public UserResponseDTO updateUser(Long id, CreateUserDTO userDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+        
+        user.setUsername(userDTO.getUsername());
+        
+        if(userDTO.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+        
+        if(userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
+            Set<Role> roles = new HashSet<>();
+            for (String roleName : userDTO.getRoles()) {
+                Role role = roleRepository.findByName(roleName);
+                if(role == null) {
+                    role = new Role();
+                    role.setName(roleName);
+                    role = roleRepository.save(role);
+                }
+                roles.add(role);
+            }
+            user.setRoles(roles);
+        }
+        
+        User savedUser = userRepository.save(user);
+        return modelMapper.map(savedUser, UserResponseDTO.class);
     }
     
-    public void deleteUser(Long id) {
-    	userRepository.deleteById(id);
+    public Map<String, String> deleteUser(Long id) {
+        userRepository.deleteById(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("mensaje", "Usuario eliminado exitosamente");
+        return response;
     }
 }

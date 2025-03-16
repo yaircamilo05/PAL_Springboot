@@ -21,6 +21,8 @@ public class CourseController {
 
     @PostMapping("/create")
     public ResponseEntity<CourseResponseDTO> createCourse(@RequestBody CreateCourseDTO courseDTO) {
+        System.out.println("📩 Petición recibida en el controlador");
+        System.out.println("Datos recibidos: " + courseDTO);
         return ResponseEntity.status(201).body(courseService.createCourse(courseDTO));
     }
 

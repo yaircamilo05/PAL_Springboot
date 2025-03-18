@@ -41,23 +41,33 @@ public class CourseService {
     }
 
     public CourseResponseDTO createCourse(CreateCourseDTO createCourseDTO) {
+        System.out.println("Iniciando creación de curso...");
+
         Course course = new Course();
         course.setTitle(createCourseDTO.getTitle());
         course.setDescription(createCourseDTO.getDescription());
         course.setPrice(createCourseDTO.getPrice());
-        
+
+        System.out.println("Buscando categoría con ID: " + createCourseDTO.getCategoryId());
         Category category = categoryRepository.findById(createCourseDTO.getCategoryId())
-            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         course.setCategory(category);
-        
+
+        System.out.println("Buscando instructor con ID: " + createCourseDTO.getInstructorId());
         User instructor = userRepository.findById(createCourseDTO.getInstructorId())
-            .orElseThrow(() -> new RuntimeException("Instructor no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Instructor no encontrado"));
+
+        System.out.println("Validando instructor...");
         validateInstructor(instructor);
         course.setInstructor(instructor);
-        
+
+        System.out.println("Guardando curso en la base de datos...");
         Course savedCourse = courseRepository.save(course);
+
+        System.out.println("Curso creado exitosamente con ID: " + savedCourse.getId());
         return modelMapper.map(savedCourse, CourseResponseDTO.class);
     }
+
 
     @Transactional(readOnly = true)
     public List<CourseResponseDTO> getAllCourses() {

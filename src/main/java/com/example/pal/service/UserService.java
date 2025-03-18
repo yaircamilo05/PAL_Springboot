@@ -105,4 +105,11 @@ public class UserService {
         response.put("mensaje", "Usuario eliminado exitosamente");
         return response;
     }
+
+    public List<UserResponseDTO> getUsersByRole(String role) {
+        List<User> users = userRepository.findByRolesName(role);
+        return users.stream().map(user->modelMapper.map(user, UserResponseDTO.class)).toList();
+    }
+
+
 }

@@ -1,12 +1,9 @@
 package com.example.pal.controller;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
-import java.util.HashMap;
 
 import com.example.pal.dto.UserResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +23,11 @@ import com.example.pal.service.UserService;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody CreateUserDTO userDTO){
@@ -37,13 +35,11 @@ public class UserController {
         return ResponseEntity.status(201).body(user);
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable("id") Long id){
         return ResponseEntity.ok(userService.getUserById(id));
@@ -59,5 +55,10 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, String>> deleteUser(@PathVariable("id") Long id){
         return ResponseEntity.ok(userService.deleteUser(id));
+    }
+    
+    @GetMapping("/by-role")
+    public ResponseEntity<List<UserResponseDTO>> getUsersByRole(@RequestParam("role") String role) {
+        return ResponseEntity.ok(userService.getUsersByRole(role));
     }
 }

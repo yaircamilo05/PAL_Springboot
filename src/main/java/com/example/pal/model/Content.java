@@ -1,5 +1,6 @@
 package com.example.pal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,5 +21,7 @@ public class Content {
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
+    @JsonIgnore
     private Course course; // Curso al que pertenece el archivo
+
 }

@@ -24,7 +24,7 @@ public class Course {
     @Column(nullable = false, unique = false)
     private float price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id", nullable = false)
     private User instructor;
 }

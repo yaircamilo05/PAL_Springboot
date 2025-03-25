@@ -36,7 +36,7 @@ public class ContentController {
             @RequestParam("courseId") String courseId,
             @RequestParam("file") MultipartFile file) throws IOException {
 
-        Long courseIdLong = Long.parseLong(courseId); // Conversión
+        Long courseIdLong = Long.parseLong(courseId);
         Content content = contentService.uploadContent(courseIdLong, file);
 
         return ResponseEntity.ok(content);
@@ -63,9 +63,13 @@ public class ContentController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteContent(@PathVariable Long id) {
-        boolean deleted = contentService.deleteContent(id);
-        return deleted ? ResponseEntity.ok("Contenido eliminado") : ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteContent(@PathVariable Long id) {
+        try {
+            boolean deleted = contentService.deleteContent(id);
+            return deleted ? ResponseEntity.ok("Contenido eliminado") : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al eliminar contenido: " + e.getMessage());
+        }
     }
 
     @PostMapping("/test-upload")

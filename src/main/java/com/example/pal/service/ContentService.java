@@ -103,19 +103,28 @@ public class ContentService {
         return null;
     }
 
-    /**
-     *
-     * @param id
-     * @return
-     */
     public boolean deleteContent(Long id) {
-        Optional<Content> optionalContent = contentRepository.findById(id);
-        if (optionalContent.isPresent()) {
-            Content content = optionalContent.get();
-            storage.get(bucketName, content.getUrl()).delete();
-            contentRepository.deleteById(id);
-            return true;
+        try {
+            Optional<Content> optionalContent = contentRepository.findById(id);
+            if (optionalContent.isPresent()) {
+                Content content = optionalContent.get();
+
+                // Verificar si el archivo existe antes de eliminarlo
+                Blob blob = storage.get(bucketName, content.getUrl());
+                if (blob != null) {
+                    blob.delete();
+                } else {
+                    System.err.println("Archivo no encontrado en el bucket: " + content.getUrl());
+                }
+
+                contentRepository.deleteById(id);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error eliminando contenido", e);
         }
-        return false;
     }
+
 }

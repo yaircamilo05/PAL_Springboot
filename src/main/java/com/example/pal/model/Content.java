@@ -14,14 +14,13 @@ public class Content {
     private Long id;
 
     @Column(nullable = false, unique = false)
-    private String type; // Tipo de archivo (PDF, MP4, MP3, etc.)
+    private String type;
 
     @Column(nullable = false, unique = false)
-    private String url; // URL del archivo en Google Cloud Storage
-
+    private String url;
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     @JsonIgnore
-    private Course course; // Curso al que pertenece el archivo
+    private Course course;
 
 }

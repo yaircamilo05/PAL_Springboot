@@ -33,4 +33,8 @@ public class User {
     )
     @JsonIgnore
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Course> courses;
 }

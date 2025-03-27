@@ -99,8 +99,14 @@ public class UserService {
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
     
+
+    @Transactional
     public Map<String, String> deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+        
+        userRepository.delete(user);
+    
         Map<String, String> response = new HashMap<>();
         response.put("mensaje", "Usuario eliminado exitosamente");
         return response;

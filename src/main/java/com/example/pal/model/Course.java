@@ -1,5 +1,7 @@
 package com.example.pal.model;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,4 +29,7 @@ public class Course {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id", nullable = false)
     private User instructor;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Content> contents;
 }

@@ -109,6 +109,15 @@ public class CourseService {
     }
 
     public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        // Validar si el curso tiene contenidos asociados
+        if (!course.getContents().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar el curso porque tiene contenidos asociados.");
+        }
+
+        courseRepository.delete(course);
     }
+
 } 

@@ -109,22 +109,29 @@ public class ContentService {
             if (optionalContent.isPresent()) {
                 Content content = optionalContent.get();
 
-                // Verificar si el archivo existe antes de eliminarlo
-                Blob blob = storage.get(bucketName, content.getUrl());
-                if (blob != null) {
+                // Extraer el nombre del archivo desde la URL (mediaLink)
+                String mediaUrl = content.getUrl();
+                String fileName = mediaUrl.substring(mediaUrl.lastIndexOf("/") + 1);
+
+                // Buscar y eliminar archivo en GCS
+                Blob blob = storage.get(bucketName, fileName);
+                if (blob != null && blob.exists()) {
                     blob.delete();
                 } else {
-                    System.err.println("Archivo no encontrado en el bucket: " + content.getUrl());
+                    System.err.println("Archivo no encontrado en el bucket: " + fileName);
                 }
 
                 contentRepository.deleteById(id);
                 return true;
+            } else {
+                throw new RuntimeException("Contenido no encontrado con ID: " + id);
             }
-            return false;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error eliminando contenido", e);
         }
     }
+
+
 
 }

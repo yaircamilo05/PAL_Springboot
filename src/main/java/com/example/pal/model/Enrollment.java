@@ -24,4 +24,11 @@ public class Enrollment {
 
     @Column(nullable = false)
     private Date enrollmentDate;
+
+    @Column(nullable = false)
+    private Payment payment;
+
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    private Payment paymentDetails;
 }

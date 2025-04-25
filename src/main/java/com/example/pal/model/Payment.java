@@ -6,12 +6,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Data
 @Entity
 @Table(name = "payments")
+@Data
 public class Payment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

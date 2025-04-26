@@ -10,6 +10,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import static org.springframework.security.config.Customizer.withDefaults;
+
+
+import java.util.Arrays;
 
 @Configuration
 public class SecurityConfig {
@@ -25,18 +32,44 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configura CORS globalmente para permitir peticiones desde tu front en Vue.
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login").permitAll() 
-                .requestMatchers("/api/users/create").permitAll() // Permite el registro de nuevos usuarios
-                .anyRequest().hasRole("USER") // Requiere el rol "ROLE_USER" para todos los demás endpoints
-            )
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Añade el filtro aquí
-        return http.build();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        // Orígenes que permites (ajusta la URL y el puerto de tu dev server Vue)
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        // Métodos HTTP permitidos
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        // Cabeceras que el cliente puede enviar
+        config.setAllowedHeaders(Arrays.asList("*"));
+        // Permitir enviar cookies / credenciales (si es necesario)
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Aplica esta configuración a todas las rutas
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
+
+    @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        // Usamos el DSL lambda para deshabilitar CSRF
+        .csrf(csrf -> csrf.disable())
+        // Usamos el DSL lambda para CORS en una sola llamada
+        .cors(withDefaults())
+        // Usamos el DSL lambda para autorizar peticiones
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/login", "/api/users/create").permitAll()
+            .anyRequest().hasRole("USER")
+        )
+        // Añadimos nuestro filtro JWT antes del filtro estándar
+        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {

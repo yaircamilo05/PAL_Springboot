@@ -58,19 +58,27 @@ public class JwtUtil {
                    .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, String username) {
         try {
-            parser.parseClaimsJws(token);
-            return true;
+            String extractedUsername = getUsernameFromToken(token);
+            return extractedUsername.equals(username) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
+
 
     public String getUsernameFromToken(String token) {
         return parser.parseClaimsJws(token)
                      .getBody()
                      .getSubject();
     }
+
+    
+    public boolean isTokenExpired(String token) {
+        Date expiration = parser.parseClaimsJws(token).getBody().getExpiration();
+        return expiration.before(new Date());
+    }
+
 }
 

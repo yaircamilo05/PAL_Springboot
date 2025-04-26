@@ -36,7 +36,7 @@ public class AuthController {
 
     @Transactional(readOnly = true)
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest req) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
         return userRepo.findByUsername(req.getUsername())
                 .filter(user -> passwordEncoder.matches(req.getPassword(), user.getPassword()))
                 .map(user -> {
@@ -47,4 +47,5 @@ public class AuthController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(new AuthResponse("Invalid username or password")));
     }
+
 }

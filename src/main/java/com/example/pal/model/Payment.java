@@ -10,7 +10,9 @@ import java.util.Date;
 @Table(name = "payments")
 @Data
 public class Payment {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -18,4 +20,8 @@ public class Payment {
 
     @Column(nullable = false)
     private Date paymentDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status; // Estado del pago
 }

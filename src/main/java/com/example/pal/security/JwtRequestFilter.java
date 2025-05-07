@@ -26,6 +26,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        
+                String requestURI = request.getRequestURI();
+
+                // No procesar token para endpoints públicos
+                if (requestURI.equals("/api/login") || requestURI.equals("/api/users/create")) {
+                    chain.doFilter(request, response);
+                    return;
+                }
 
         final String authHeader = request.getHeader("Authorization");
 

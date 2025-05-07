@@ -14,6 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 
 import java.util.Arrays;
@@ -60,9 +61,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .csrf(csrf -> csrf.disable())
         // Usamos el DSL lambda para CORS en una sola llamada
         .cors(withDefaults())
+
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // Usamos el DSL lambda para autorizar peticiones
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/login", "/api/users/create").permitAll()
+            .requestMatchers("/api/login", "/api/users/create","/error").permitAll()
             .anyRequest().hasRole("USER")
         )
         // Añadimos nuestro filtro JWT antes del filtro estándar

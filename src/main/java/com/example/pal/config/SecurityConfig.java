@@ -65,7 +65,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // Usamos el DSL lambda para autorizar peticiones
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/login", "/api/users/create","/error").permitAll()
+            .requestMatchers("/api/login", "/api/users/create","/error","/api/users/all").permitAll()
             .anyRequest().hasRole("USER")
         )
         // Añadimos nuestro filtro JWT antes del filtro estándar

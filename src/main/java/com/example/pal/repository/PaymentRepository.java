@@ -11,5 +11,4 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // Aquí puedes agregar métodos personalizados si es necesario
     // Por ejemplo, encontrar pagos por estado o usuario
     List<Payment> findByStatus(PaymentStatus status);
-    List<Payment> findByUserId(Long userId);
 } 

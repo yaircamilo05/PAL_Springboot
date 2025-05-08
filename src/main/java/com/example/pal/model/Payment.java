@@ -18,10 +18,13 @@ public class Payment {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+    @Column
     private Date paymentDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status; // Estado del pago
+
+    @Column(nullable = false)
+    private Date expeditionDate; 
 }

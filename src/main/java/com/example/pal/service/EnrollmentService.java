@@ -11,6 +11,8 @@ import com.example.pal.model.User;
 import com.example.pal.model.Course;
 import com.example.pal.repository.EnrollmentRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class EnrollmentService {
 
@@ -28,8 +30,8 @@ public class EnrollmentService {
         this.modelMapper = modelMapper;
     }
 
-    
-        public Enrollment enrollUserInCourse(Long userId, Long courseId) {
+    @Transactional
+    public Enrollment enrollUserInCourse(Long userId, Long courseId) {
         User user = userService.findById(userId);
         Course course = courseService.findById(courseId);
     

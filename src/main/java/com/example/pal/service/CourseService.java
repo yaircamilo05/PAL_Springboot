@@ -120,4 +120,11 @@ public class CourseService {
         courseRepository.delete(course);
     }
 
+
+    @Transactional(readOnly = true)
+    public Course findById(Long id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
+    }
+
 } 

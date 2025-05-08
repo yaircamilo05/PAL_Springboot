@@ -117,5 +117,10 @@ public class UserService {
         return users.stream().map(user->modelMapper.map(user, UserResponseDTO.class)).toList();
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+    }
+
 
 }

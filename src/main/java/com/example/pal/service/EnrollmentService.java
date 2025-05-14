@@ -1,15 +1,18 @@
 package com.example.pal.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.example.pal.model.Enrollment;
 import com.example.pal.model.EnrollmentId;
+import com.example.pal.model.Payment;
 import com.example.pal.model.User;
 import com.example.pal.model.Course;
 import com.example.pal.repository.EnrollmentRepository;
+import com.example.pal.dto.EnrollmentDTO;
 
 import jakarta.transaction.Transactional;
 
@@ -31,7 +34,7 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public Enrollment enrollUserInCourse(Long userId, Long courseId) {
+    public EnrollmentDTO enrollUserInCourse(Long userId, Long courseId) {
         User user = userService.findById(userId);
         Course course = courseService.findById(courseId);
     
@@ -51,10 +54,31 @@ public class EnrollmentService {
         enrollment.setId(enrollmentId); // Establecer el ID compuesto
         enrollment.setUser(user);
         enrollment.setCourse(course);
-    
+        Payment payment = paymentService.createPayment(BigDecimal.valueOf(course.getPrice()));
         // Crear el pago usando PaymentService
-        enrollment.setPayment(paymentService.createPayment(BigDecimal.valueOf(course.getPrice())));
-    
-        return enrollmentRepository.save(enrollment);
+        enrollment.setPayment(payment);
+
+        enrollmentRepository.save(enrollment);
+
+        EnrollmentDTO enrollmentDTO = modelMapper.map(enrollment, EnrollmentDTO.class);
+        enrollmentDTO.setCourseName(enrollment.getCourse().getTitle());
+        enrollmentDTO.setPaymentStatus(enrollment.getPayment().getStatus());
+
+        return enrollmentDTO;
     }
+
+
+@Transactional
+public List<EnrollmentDTO> getAllEnrollmentsByUserId(Long userId) {
+    List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+    return enrollments.stream()
+            .map(enrollment -> {
+                EnrollmentDTO enrollmentDTO = modelMapper.map(enrollment, EnrollmentDTO.class);
+                enrollmentDTO.setCourseName(enrollment.getCourse().getTitle());
+                enrollmentDTO.setPaymentStatus(enrollment.getPayment().getStatus());
+                return enrollmentDTO;
+            })
+            .toList();
+}
+
 }

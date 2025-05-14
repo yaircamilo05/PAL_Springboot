@@ -1,5 +1,7 @@
 package com.example.pal.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +13,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
     
 
     boolean existsById(EnrollmentId id);
+
+    //conseguir todos los cursos de un usuario
+    List<Enrollment> findByUserId(Long userId);
 
 } 

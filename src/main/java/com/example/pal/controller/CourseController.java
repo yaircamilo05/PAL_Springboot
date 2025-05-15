@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import com.example.pal.service.CourseService;
 import com.example.pal.dto.CreateCourseDTO;
 import com.example.pal.dto.CourseResponseDTO;
+import com.example.pal.dto.CourseSearchDTO;
+
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -21,8 +23,6 @@ public class CourseController {
 
     @PostMapping("/create")
     public ResponseEntity<CourseResponseDTO> createCourse(@RequestBody CreateCourseDTO courseDTO) {
-        System.out.println("📩 Petición recibida en el controlador");
-        System.out.println("Datos recibidos: " + courseDTO);
         return ResponseEntity.status(201).body(courseService.createCourse(courseDTO));
     }
 
@@ -50,4 +50,10 @@ public class CourseController {
         response.put("mensaje", "Curso eliminado exitosamente");
         return ResponseEntity.ok(response);
     }
-} 
+
+    @GetMapping("/search")
+    public ResponseEntity<List<CourseResponseDTO>> searchCourses(@RequestBody CourseSearchDTO courseSearch) {
+        return ResponseEntity.ok(courseService.searchCourses(courseSearch));
+    }
+}
+

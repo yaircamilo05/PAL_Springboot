@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.pal.dto.CreateEnrollment;
 import com.example.pal.dto.EnrollmentDTO;
 import com.example.pal.service.EnrollmentService;
-import com.example.pal.model.Enrollment; // Ensure this import matches the actual package of the Enrollment class
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 

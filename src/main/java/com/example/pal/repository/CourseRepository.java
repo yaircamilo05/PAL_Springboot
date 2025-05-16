@@ -16,12 +16,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
             "(:title IS NULL OR c.title LIKE %:title%) AND " +
             "(:description IS NULL OR c.description LIKE %:description%) AND " +
             "(:categoryName IS NULL OR c.category.name LIKE %:categoryName%) AND " +
-            "(:free IS NULL OR c.free = :free) AND " +
-            "(:difficulty IS NULL OR c.difficulty LIKE %:difficulty%)")
+            "(:free IS NULL OR (:free = TRUE AND c.price = 0) OR (:free = FALSE AND c.price > 0))")
     List<Course> searchCourses(
         @Param("title") String title, 
         @Param("description") String description, 
         @Param("categoryName") String categoryName, 
-        @Param("free") Boolean free, 
-        @Param("difficulty") String difficulty);
+        @Param("free") Boolean free);
 }

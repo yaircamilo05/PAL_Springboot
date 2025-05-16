@@ -26,9 +26,13 @@ public class PaymentService {
         return paymentRepository.save(payment); 
     }
     
+    public Payment getPaymentById(Long id) {
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
+    }
 
     public void processPayment(Payment payment) {
-        // Lógica para procesar el pago (por ejemplo, integración con una pasarela de pago)
+        
         payment.setStatus(PaymentStatus.COMPLETED);
         payment.setPaymentDate(new java.util.Date());
         paymentRepository.save(payment);

@@ -135,8 +135,8 @@ public class CourseService {
                 courseSearch.getTitle(),
                 courseSearch.getDescription(),
                 courseSearch.getCategoryName(),
-                courseSearch.getFree(),
-                courseSearch.getDifficulty()
+                courseSearch.getFree()
+                // courseSearch.getDifficulty()
         );
         return courses.stream()
                 .map(course -> modelMapper.map(course, CourseResponseDTO.class))

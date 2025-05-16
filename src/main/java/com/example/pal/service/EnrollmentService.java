@@ -75,6 +75,7 @@ public List<EnrollmentDTO> getAllEnrollmentsByUserId(Long userId) {
             .map(enrollment -> {
                 EnrollmentDTO enrollmentDTO = modelMapper.map(enrollment, EnrollmentDTO.class);
                 enrollmentDTO.setCourseName(enrollment.getCourse().getTitle());
+                enrollmentDTO.setPaymentId(enrollment.getPayment().getId());
                 enrollmentDTO.setPaymentStatus(enrollment.getPayment().getStatus());
                 return enrollmentDTO;
             })

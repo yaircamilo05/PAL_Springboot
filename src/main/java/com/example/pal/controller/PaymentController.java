@@ -30,9 +30,9 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(payment);
     }
 
-    @PostMapping("/process/{id}")
-    public ResponseEntity<Payment> processPayment(@PathVariable Long id) {
-        Payment payment = paymentService.getPaymentById(id);
+    @PostMapping("/process/{paymentId}")
+    public ResponseEntity<Payment> processPayment(@PathVariable("paymentId") Long paymentId) {
+        Payment payment = paymentService.getPaymentById(paymentId);
         paymentService.processPayment(payment);
         return ResponseEntity.ok(payment);
     }

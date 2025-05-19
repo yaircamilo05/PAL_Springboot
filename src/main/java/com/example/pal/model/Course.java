@@ -6,9 +6,13 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"instructor", "contents"})
 @Entity
 @Table(name = "course")
 public class Course {
@@ -36,4 +40,19 @@ public class Course {
     @JsonIgnore
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents = new ArrayList<>();
+    
+    // Sobrescribir equals para utilizar solo el ID
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Course)) return false;
+        Course course = (Course) o;
+        return id != null && id.equals(course.id);
+    }
+    
+    // Sobrescribir hashCode para utilizar solo el ID
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

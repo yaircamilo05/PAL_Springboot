@@ -36,5 +36,6 @@ public class PaymentService {
         payment.setStatus(PaymentStatus.COMPLETED);
         payment.setPaymentDate(new java.util.Date());
         paymentRepository.save(payment);
+        
     }
 }

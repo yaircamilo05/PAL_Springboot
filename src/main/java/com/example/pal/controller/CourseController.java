@@ -4,12 +4,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import com.example.pal.service.CourseService;
 import com.example.pal.dto.CreateCourseDTO;
+import com.example.pal.dto.CourseDetailsDTO;
 import com.example.pal.dto.CourseResponseDTO;
 import com.example.pal.dto.CourseSearchDTO;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/courses")
@@ -55,5 +59,11 @@ public class CourseController {
     public ResponseEntity<List<CourseResponseDTO>> searchCourses(@RequestBody CourseSearchDTO courseSearch) {
         return ResponseEntity.ok(courseService.searchCourses(courseSearch));
     }
+
+@GetMapping("/{courseId}/details")
+public ResponseEntity<CourseDetailsDTO> getCourseDetails(@PathVariable("courseId") Long courseId) {
+    return ResponseEntity.ok(courseService.getCourseDetailsWithContent(courseId));
+}
+    
 }
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class QuestionDTO {
+    private Long id;
     private String text;
     private Double points;
     private QuestionType type;

@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,8 +93,9 @@ public class ExamService {
     }
 
     @Transactional
-    public ExamAttempt startExam(Long examId, Long userId) {
-        Exam exam = getExamById(examId);
+    public ExamAttemptDTO startExam(Long examId, Long userId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Examen no encontrado con id: " + examId));
         User student = userService.findById(userId);
         
         // Verificar si el estudiante ya tiene un intento en progreso
@@ -112,13 +114,25 @@ public class ExamService {
         attempt.setStatus(ExamStatus.IN_PROGRESS);
         attempt.setMaxScore(exam.getTotalPoints());
         
-        return examAttemptRepository.save(attempt);
+        attempt = examAttemptRepository.save(attempt);
+        
+        // Convertir a DTO
+        ExamAttemptDTO dto = new ExamAttemptDTO();
+        dto.setId(attempt.getId());
+        dto.setExamId(exam.getId());
+        dto.setExamTitle(exam.getTitle());
+        dto.setStartTime(attempt.getStartTime());
+        dto.setTimeLimit(exam.getTimeLimit());
+        dto.setTotalQuestions(exam.getQuestions().size());
+        dto.setQuestions(this.getExamQuestions(examId));
+        
+        return dto;
     }
 
     @Transactional
     public ExamResultDTO submitExam(Long examId, Long userId, ExamSubmissionDTO submission) {
         // Obtener el examen y el usuario
-        Exam exam = getExamById(examId);
+        Exam exam = examRepository.findExamById(examId);
         User student = userService.findById(userId);
         
         // Buscar el intento en progreso más reciente del estudiante
@@ -302,4 +316,40 @@ public class ExamService {
         
         return resultDTO;
     }
+
+    @Transactional(readOnly = true)
+    public List<QuestionDTO> getExamQuestions(Long examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Examen no encontrado con id: " + examId));
+        
+        // Convertir a DTOs para no enviar las respuestas correctas al cliente
+        return exam.getQuestions().stream().map(question -> {
+            QuestionDTO dto = new QuestionDTO();
+            dto.setId(question.getId());
+            dto.setText(question.getText());
+            dto.setPoints(question.getPoints());
+            dto.setType(question.getType());
+            
+            // Para preguntas de opción múltiple, incluir opciones
+            if (question.getOptions() != null && !question.getOptions().isEmpty()) {
+                List<QuestionOptionDTO> optionDTOs = question.getOptions().stream()
+                    .map(option -> {
+                        QuestionOptionDTO optionDTO = new QuestionOptionDTO();
+                        optionDTO.setId(option.getId());
+                        optionDTO.setText(option.getText());
+                        // No incluir si la opción es correcta
+                        optionDTO.setIsCorrect(null);
+                        return optionDTO;
+                    })
+                    .collect(Collectors.toList());
+                dto.setOptions(optionDTOs);
+            }
+            
+            // No enviar respuestas correctas al cliente
+            dto.setCorrectAnswer(null);
+            
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }

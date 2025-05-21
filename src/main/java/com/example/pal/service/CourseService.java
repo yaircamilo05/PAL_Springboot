@@ -9,6 +9,8 @@ import com.example.pal.model.Course;
 import com.example.pal.model.Category;
 import com.example.pal.model.User;
 import com.example.pal.dto.CreateCourseDTO;
+import com.example.pal.dto.ExamGetBasic;
+import com.example.pal.dto.CourseDetailsDTO;
 import com.example.pal.dto.CourseResponseDTO;
 import com.example.pal.dto.CourseSearchDTO;
 
@@ -141,6 +143,15 @@ public class CourseService {
         return courses.stream()
                 .map(course -> modelMapper.map(course, CourseResponseDTO.class))
                 .toList();
-    } 
+    }
 
-} 
+    public CourseDetailsDTO getCourseDetailsWithContent(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + courseId));
+        CourseDetailsDTO courseDetails = modelMapper.map(course, CourseDetailsDTO.class);
+        courseDetails.setExams(course.getExams().stream()
+                .map(exam -> modelMapper.map(exam, ExamGetBasic.class))
+                .toList());
+        return courseDetails;
+    }
+}

@@ -352,4 +352,24 @@ public class ExamService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ExamResultDTO> getAllExamResults(Long courseId, Long userId) {
+        Course course = courseService.findById(courseId);
+        User student = userService.findById(userId);
+
+        List<Exam> exams = examRepository.findByCourse(course);
+
+        // Obtener los resultados de los exámenes para el estudiante
+        List<ExamResultDTO> results = new ArrayList<>();
+        for (Exam exam : exams) {
+            ExamAttempt attempt = examAttemptRepository.findTopByStudentAndExamOrderByStartTimeDesc(student, exam)
+                .filter(a -> a.getStatus() != ExamStatus.IN_PROGRESS)
+                .orElseThrow(() -> new RuntimeException("No se encontró ningún examen completado para este estudiante"));
+            ExamResultDTO resultDTO = buildExamResultDTO(attempt);
+            results.add(resultDTO);
+        }
+
+        return results;
+    }
+
 }

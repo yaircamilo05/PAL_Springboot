@@ -67,4 +67,12 @@ public ResponseEntity<List<QuestionDTO>> getExamQuestions(
     return ResponseEntity.ok(questions);
 }
 
+@GetMapping("/results/{courseId}/all")
+public ResponseEntity<List<ExamResultDTO>> getAllExamResults(
+        @PathVariable("courseId") Long courseId,
+        @RequestParam("userId") Long userId) {
+    List<ExamResultDTO> results = examService.getAllExamResults(courseId, userId);
+    return ResponseEntity.ok(results);
+
+}
 }

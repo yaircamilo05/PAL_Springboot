@@ -8,6 +8,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import java.io.InputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -32,15 +33,27 @@ public class CertificateController {
 
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-            Document document = new Document();
-            PdfWriter.getInstance(document, out);
+            Document document = new Document(PageSize.A4);
+            PdfWriter writer = PdfWriter.getInstance(document, out);
             document.open();
 
-            Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
-            Paragraph title = new Paragraph("Certificado de Finalización", font);
+            // ✅ Insertar imagen como logo o marca de agua
+            InputStream imageStream = getClass().getResourceAsStream("/static/images/logo.png");
+            if (imageStream != null) {
+                Image image = Image.getInstance(imageStream.readAllBytes());
+                image.setAbsolutePosition(200, 400); // posición en la página
+                image.scaleAbsolute(200, 200); // tamaño
+                image.setAlignment(Image.UNDERLYING); // detrás del texto
+                image.setTransparency(new int[] { 0x00, 0x10 }); // semitransparente
+                document.add(image);
+            }
+
+            // ✅ Título y contenido del certificado
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
+            Paragraph title = new Paragraph("Certificado de Finalización", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
+
             document.add(new Paragraph("\n"));
             document.add(new Paragraph(certificate.getContentText()));
 
@@ -53,13 +66,16 @@ public class CertificateController {
                     .build());
 
             return new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.OK);
+
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<CertificateResponseDTO>> listStudentCertificates(@PathVariable("studentId") Long studentId) {
+    public ResponseEntity<List<CertificateResponseDTO>> listStudentCertificates(
+            @PathVariable("studentId") Long studentId) {
         return ResponseEntity.ok(certificateService.getCertificatesForStudent(studentId));
     }
 }

@@ -25,7 +25,7 @@ public class Enrollment {
     @JsonIgnore
     private Course course;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Date enrollmentDate;
 
     // Esta es la única propiedad Payment: relación correctamente mapeada

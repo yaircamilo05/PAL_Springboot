@@ -1,15 +1,13 @@
 package com.example.pal.dto;
 
-import java.util.List;
-
 import lombok.Data;
-
+import java.util.List;
 
 @Data
 public class CourseDetailsDTO {
     private String title;
     private String description;
-    private String category;
-    private String instructor;
+    private CategoryDTO category;       
+    private UserResponseDTO instructor; 
     private List<ExamGetBasic> exams;
 }

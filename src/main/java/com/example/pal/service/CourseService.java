@@ -3,9 +3,11 @@ package com.example.pal.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.pal.repository.CourseRepository;
+import com.example.pal.repository.EnrollmentRepository;
 import com.example.pal.repository.CategoryRepository;
 import com.example.pal.repository.UserRepository;
 import com.example.pal.model.Course;
+import com.example.pal.model.Enrollment;
 import com.example.pal.model.Category;
 import com.example.pal.model.User;
 import com.example.pal.dto.CreateCourseDTO;
@@ -16,6 +18,7 @@ import com.example.pal.dto.CourseSearchDTO;
 
 import org.modelmapper.ModelMapper;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,15 +27,18 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final ModelMapper modelMapper;
 
     public CourseService(CourseRepository courseRepository, 
                         CategoryRepository categoryRepository,
                         UserRepository userRepository,
+                        EnrollmentRepository enrollmentRepository,
                         ModelMapper modelMapper) {
         this.courseRepository = courseRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.enrollmentRepository = enrollmentRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -154,4 +160,13 @@ public class CourseService {
                 .toList());
         return courseDetails;
     }
+    public List<CourseResponseDTO> getCoursesForStudent(Long studentId) {
+    List<Enrollment> enrollments = enrollmentRepository.findByUser_Id(studentId);
+    
+    return enrollments.stream()
+            .map(Enrollment::getCourse)
+            .map(course -> modelMapper.map(course, CourseResponseDTO.class))
+            .collect(Collectors.toList());
+}
+
 }

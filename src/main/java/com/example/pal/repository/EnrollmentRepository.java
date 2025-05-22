@@ -13,6 +13,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
     
 
     boolean existsById(EnrollmentId id);
+    List<Enrollment> findByUser_Id(Long userId);
 
     //conseguir todos los cursos de un usuario
     List<Enrollment> findByUserId(Long userId);

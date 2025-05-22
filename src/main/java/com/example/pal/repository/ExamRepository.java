@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface ExamRepository extends JpaRepository<Exam, Long> {
 
     List<Exam> findByCourse(Course course);
+    List<Exam> findByCourseId(Long courseId);
 
     Exam findExamById(Long examId);
+    
 }

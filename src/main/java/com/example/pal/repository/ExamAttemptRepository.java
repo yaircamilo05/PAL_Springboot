@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface ExamAttemptRepository extends JpaRepository<ExamAttempt, Long> {
     List<ExamAttempt> findByStudent(User student);
+    List<ExamAttempt> findByExamIdAndStudentId(Long examId, Long studentId);
     List<ExamAttempt> findByExam(Exam exam);
     List<ExamAttempt> findByStudentAndExam(User student, Exam exam);
     Optional<ExamAttempt> findTopByStudentAndExamOrderByStartTimeDesc(User student, Exam exam);

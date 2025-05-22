@@ -11,8 +11,6 @@ import com.example.pal.dto.CourseSearchDTO;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -64,6 +62,12 @@ public class CourseController {
 public ResponseEntity<CourseDetailsDTO> getCourseDetails(@PathVariable("courseId") Long courseId) {
     return ResponseEntity.ok(courseService.getCourseDetailsWithContent(courseId));
 }
+
+@GetMapping("/student/{studentId}")
+public ResponseEntity<List<CourseResponseDTO>> getCoursesByStudent(@PathVariable("studentId") Long studentId) {
+    return ResponseEntity.ok(courseService.getCoursesForStudent(studentId));
+}
+
     
 }
 

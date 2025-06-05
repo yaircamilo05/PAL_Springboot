@@ -3,7 +3,6 @@ package com.example.pal.model;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,17 +22,17 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
-    // Lazy significa perezoso
-    // Cuando digo Lazy, hago referencia a cargar una sola vez. Y cargo más en caso de que sean necesario
-    // De la forma eager, cargo todas y genero una sobre carga
-    @ManyToMany(fetch = FetchType.LAZY)
+    @Column(name = "full_name")
+    private String fullName;
+
+    @ManyToMany(fetch = FetchType.EAGER) // <-- Cambio aquí
     @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @JsonIgnore
     private Set<Role> roles;
@@ -41,8 +40,7 @@ public class User {
     @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private Set<Course> courses;
-    
-    // Sobrescribir equals para utilizar solo el ID
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -50,8 +48,7 @@ public class User {
         User user = (User) o;
         return id != null && id.equals(user.id);
     }
-    
-    // Sobrescribir hashCode para utilizar solo el ID
+
     @Override
     public int hashCode() {
         return getClass().hashCode();

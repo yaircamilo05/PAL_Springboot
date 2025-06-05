@@ -80,5 +80,21 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
+    public String generateToken(com.example.pal.model.User user) {
+    Date now = new Date();
+    Date exp = new Date(now.getTime() + expirationMs);
+    return Jwts.builder()
+            .setSubject(user.getUsername())
+            .claim("id", user.getId())
+            .claim("roles", user.getRoles().stream()
+                    .map(r -> r.getName())  // asumiendo que tienes getName()
+                    .toList())
+            .setIssuedAt(now)
+            .setExpiration(exp)
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+
 }
 
